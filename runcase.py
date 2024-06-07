@@ -830,10 +830,11 @@ else:
     print('nccopy -3 '+options.ccsm_input+'/lnd/clm2/paramdata/'+parm_file+' '+tmpdir+'/clm_params.nc')
     os.system('nccopy -3 '+options.ccsm_input+'/lnd/clm2/paramdata/'+parm_file+' ' \
               +tmpdir+'/clm_params.nc')
-    myncap = 'ncap'
-    if ( 'chrysalis' in options.machine or 'compy' in options.machine or 'ubuntu' in options.machine \
-          or 'mymac' in options.machine or 'anvil' in options.machine):
-      myncap='ncap2'
+
+myncap = 'ncap'
+if ( 'chrysalis' in options.machine or 'compy' in options.machine or 'ubuntu' in options.machine \
+        or 'mymac' in options.machine or 'anvil' in options.machine):
+    myncap='ncap2'
 
     flnr = nffun.getvar(tmpdir+'/clm_params.nc','flnr')
     if (options.humhol or options.marsh):
