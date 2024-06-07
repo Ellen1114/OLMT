@@ -191,6 +191,8 @@ parser.add_option("--fates", dest="fates", default=False, action="store_true", \
                   help = 'Use fates model')
 parser.add_option("--fates_nutrient", dest="fates_nutrient", default="", \
                   help = 'Which version of fates_nutrient to use (RD or ECA)')
+parser.add_option("--fates_logging", dest="fates_logging", default=False, action="store_true", \
+                  help = 'Set fates logging to true')
 parser.add_option("--ECA", dest="eca", default=False, action="store_true", \
                   help = 'Use ECA compset')
 parser.add_option("--c_only", dest="c_only", default=False, action ="store_true",  \
@@ -329,8 +331,6 @@ if (options.machine == ''):
 
 if (options.ccsm_input != ''):
     ccsm_input = options.ccsm_input
-elif (options.machine == 'titan' or options.machine == 'eos'):
-    ccsm_input = '/lustre/atlas/world-shared/cli900/cesm/inputdata'
 elif (options.machine == 'cades'):
     ccsm_input = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/'
 elif (options.machine == 'edison' or 'cori' in options.machine):
@@ -341,9 +341,7 @@ elif ('compy' in options.machine):
     ccsm_input = '/compyfs/inputdata/'
 
 #if (options.compiler != ''):
-#    if (options.machine == 'titan'):
-#        options.compiler = 'pgi'
-#    if (options.machine == 'eos' or options.machine == 'edison' or 'cori' in options.machine):
+#    if ('cori' in options.machine):
 #        options.compiler = 'intel'
 #    if (options.machine == 'cades'):
 #        options.compiler = 'gnu'
@@ -370,12 +368,7 @@ csmdir = options.csmdir
 myproject='e3sm'
 if (options.runroot == '' or (os.path.exists(options.runroot) == False)):
     myuser = getpass.getuser()
-    if (options.machine == 'titan' or options.machine == 'eos'):
-        myinput = open('/ccs/home/'+myuser+'/.cesm_proj','r')
-        for s in myinput:
-            myproject=s[:-1]
-        runroot='/lustre/atlas/scratch/'+myuser+'/'+myproject
-    elif (options.machine == 'cades'):
+    if (options.machine == 'cades'):
         runroot='/lustre/or-scratch/cades-ccsi/scratch/'+myuser
     elif ('cori' in options.machine):
         runroot='/global/cscratch1/sd/'+myuser
@@ -383,8 +376,6 @@ if (options.runroot == '' or (os.path.exists(options.runroot) == False)):
         for s in myinput:
            myproject=s[:-1] 
         print('Project = '+myproject)
-    elif ('edison' in options.machine):
-        runroot=os.environ.get('CSCRATCH')+'/acme_scratch/edison/'
     elif ('anvil' in options.machine or 'chrysalis' in options.machine):
         runroot="/lcrc/group/acme/"+myuser
         myproject='e3sm'
@@ -599,6 +590,8 @@ for row in AFdatareader:
             basecmd = basecmd+ ' --fates_paramfile '+options.fates_paramfile
         if (options.fates_nutrient != ''):
             basecmd = basecmd+ ' --fates_nutrient '+options.fates_nutrient
+        if (options.fates_logging):
+            basecmd = basecmd+ ' --fates_logging '
         if (options.surfdata_grid):
             basecmd = basecmd+' --surfdata_grid'
         if (options.ensemble_file != ''):   
@@ -1036,20 +1029,20 @@ for row in AFdatareader:
                     sys.exit(1)
 
 
-            # experiment simulations
-            if ((options.eco2_file != '') and not options.cpl_bypass):
-                print('\n\nSetting up experiment transient case 2\n')
-                result = os.system(cmd_trns2)
-                print(cmd_trns2)
-                if (result > 0):
-                    print('Site_fullrun:  Error in runcase.py for transient 2')
-                    sys.exit(1)
-                print('\n\nSetting up experiment transient case 3\n')
-                print(cmd_trns3)
-                result = os.system(cmd_trns3)
-                if (result > 0):
-                    print('Site_fullrun:  Error in runcase.py for transient 3')
-                    sys.exit(1)
+        # experiment simulations
+        if ((options.eco2_file != '') and not options.cpl_bypass):
+            print('\n\nSetting up experiment transient case 2\n')
+            result = os.system(cmd_trns2)
+            print(cmd_trns2)
+            if (result > 0):
+                print('Site_fullrun:  Error in runcase.py for transient 2')
+                sys.exit(1)
+            print('\n\nSetting up experiment transient case 3\n')
+            print(cmd_trns3)
+            result = os.system(cmd_trns3)
+            if (result > 0):
+                print('Site_fullrun:  Error in runcase.py for transient 3')
+                sys.exit(1)
 
                  
         # Create .pbs etc scripts for each case
@@ -1129,11 +1122,15 @@ for row in AFdatareader:
                                     output.write('#SBATCH --partition=debug\n')
                                 else:
                                     output.write('#SBATCH --partition=regular\n')
-                            if ('cades' in options.machine):
+                            if ('cades-baseline' in options.machine):
+                                output.write('#SBATCH -A CLI185\n')
+                                output.write('#SBATCH -p batch\n')
+                                output.write('#SBATCH --ntasks-per-node 128\n')
+                            elif ('cades' in options.machine):
                                 output.write('#SBATCH -A ccsi\n')
                                 output.write('#SBATCH -p batch\n')
-                                output.write('#SBATCH --mem='+str(npernode*2)+'G\n')
-                                output.write('#SBATCH --ntasks-per-node '+str(npernode)+'\n')
+                                output.write('#SBATCH --mem=64G\n')
+                                output.write('#SBATCH --ntasks-per-node 32\n')
                     elif ("#" in s and "ppn" in s):
                         if ('cades' in options.machine):
                             #if ('diags' in c or 'iniadjust' in c):
@@ -1151,26 +1148,7 @@ for row in AFdatareader:
                 input.close()
                 output.write("\n")
         
-                if (options.machine == 'eos'):
-                    output.write('source $MODULESHOME/init/csh\n')
-                    output.write('module load nco\n')
-                    output.write('module unload python\n')
-                    output.write('module load python/2.7.5\n')
-                    output.write('module unload PrgEnv-intel\n')
-                    output.write('module load PrgEnv-gnu\n')
-                    output.write('module load python_numpy\n')
-                    output.write('module load python_scipy\n')
-                    output.write('module load python_mpi4py/2.0.0\n')
-                    output.write('module unload PrgEnv-gnu\n')
-                    output.write('module load PrgEnv-intel\n')
-                if (options.machine == 'titan'):
-                    output.write('source $MODULESHOME/init/csh\n')
-                    output.write('module load nco\n')
-                    output.write('module load python\n')
-                    output.write('module load python_numpy/1.9.2\n')
-                    output.write('module load python_scipy/0.15.1\n')
-                    output.write('module load python_mpi4py/2.0.0\n')
-                if (options.machine == 'edison' or 'cori' in options.machine):
+                if ('cori' in options.machine):
                     output.write('source $MODULESHOME/init/csh\n')
                     output.write('module unload python\n')
                     output.write('module unload scipy\n')
@@ -1372,6 +1350,10 @@ for row in AFdatareader:
                   cases.append(basecase+'_'+modelst+'_trans')
                 else:
                   cases.append(basecase+'_'+modelst.replace('1850','20TR'))
+
+                if (options.eco2_file):
+                  cases.append(basecase+'_'+modelst.replace('1850','20TR')+'_aCO2')
+                  cases.append(basecase+'_'+modelst.replace('1850','20TR')+'_eCO2')
 
             job_depend_run=''    
             if (len(cases) > 1 and options.constraints != ''):
