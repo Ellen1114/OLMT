@@ -89,7 +89,14 @@ parser.add_option("--notrans", action="store_true", dest="notrans", default=Fals
                   help='Do not perform transient simulation (spinup only)')
 parser.add_option("--finidat", dest="finidat", default='', \
                   help = 'Full path of ELM restart file to use (for transient only)')
-
+parser.add_option("--branch", dest="branch", default=False, \
+                  help = 'Switch for branch run', action="store_true")
+parser.add_option("--finidat_case", dest="finidat_case", default='', \
+                  help = "case containing initial data file to use" \
+                  +" (should be in your run directory)")
+parser.add_option("--finidat_year", dest="finidat_year", default=-1, \
+                  help = "model year of initial data file (default is" \
+                  +" last available)")
 
 # model input options
 parser.add_option("--site", dest="site", default='', \
@@ -709,6 +716,12 @@ for row in AFdatareader:
             if (options.clmpf_prefix!=''): 
                 basecmd = basecmd + ' --clmpf_prefix '+options.clmpf_prefix
 
+        #branch run
+        if (options.branch and options.finidat_case != ''):
+            basecmd = basecmd + ' --branch --finidat_case '+options.finidat_case
+            if (options.finidat_year != '-1'):
+                basecmd = basecmd + ' --finidat_year '+options.finidat_year
+            
 #---------------- build commands for runcase.py -----------------------------
 
         # define compsets

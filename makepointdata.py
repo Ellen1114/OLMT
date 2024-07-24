@@ -536,7 +536,7 @@ if myrank==0:
     if(ierr==0): 
         # NC-4 classic better for either NC-4 or NC-3 tools, 
         # but 'ncrename' not good with NC-4
-        ierr = os.system('/usr/local/gcc-x/netcdf-4.x-hdf5-gcc/bin/nccopy -7 -u '+domainfile_new+' '+domainfile_new+'.tmp')
+        ierr = os.system('nccopy -7 -u '+domainfile_new+' '+domainfile_new+'.tmp')
         if(ierr!=0):
             print('nccopy -7 -u '+domainfile_new+' '+domainfile_new+'.tmp')
             raise RuntimeError('Error: nccopy -7 -u ');# os.sys.exit()
