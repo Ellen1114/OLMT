@@ -1154,7 +1154,7 @@ for row in AFdatareader:
                             if ('cades-baseline' in options.machine):
                                 output.write('#SBATCH -A cli185\n')
                                 output.write('#SBATCH -p batch\n')
-                                output.write('#SBATCH --mem='+str(npernode*2)+'G\n')
+                                output.write('#SBATCH --mem=0G\n')
                                 output.write('#SBATCH --ntasks-per-node '+str(npernode)+'\n')
                             elif ('cades' in options.machine):
                                 output.write('#SBATCH -A ccsi\n')
