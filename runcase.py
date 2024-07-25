@@ -392,6 +392,8 @@ elif ('metis' in options.machine):
     ppn=16
 elif ('oic2' in options.machine):
     ppn=8
+elif ('cades-baseline' in options.machine):
+    ppn=128
 elif ('oic5' in options.machine or 'cori-haswell' in options.machine or 'eos' in options.machine \
       or 'cades' in options.machine):
     ppn=32
@@ -1168,7 +1170,7 @@ if (options.maxpatch_pft != 17):
   os.system("./xmlchange --id CLM_BLDNML_OPTS --val '" + xval + "'")
 
 # for spinup and transient runs, PIO_TYPENAME is pnetcdf, which now not works well
-if('mac' in options.machine or 'cades' in options.machine): 
+if('mac' in options.machine or 'cades-baseline' in options.machine or 'cades' in options.machine): 
     os.system("./xmlchange --id PIO_TYPENAME --val netcdf ")
 
 
@@ -1924,7 +1926,9 @@ if ((options.ensemble_file != '' or int(options.mc_ensemble) != -1) and (options
     num=0
     #Launch ensemble if requested 
     mysubmit_type = 'qsub'
-    if ('cades' in options.machine or 'compy' in options.machine or 'ubuntu' in options.machine or 'cori' in options.machine or \
+    if ('cades-baseline' in options.machine):
+        mysubmit_type = 'sbatch'
+    elif ('cades' in options.machine or 'compy' in options.machine or 'ubuntu' in options.machine or 'cori' in options.machine or \
         options.machine == 'anvil' or options.machine == 'edison'):
         mysubmit_type = 'sbatch'
     if (options.ensemble_file != ''):
@@ -1964,7 +1968,12 @@ if ((options.ensemble_file != '' or int(options.mc_ensemble) != -1) and (options
                 output_run.write('#SBATCH --constraint=knl\n')
             if ('compy' in options.machine and options.debug):
               output_run.write('#SBATCH --qos=short\n')
-            if ('cades' in options.machine):
+            if ('cades-baseline' in options.machine):
+              output_run.write('#SBATCH -A cli185\n')
+              output_run.write('#SBATCH -p batch\n')
+              output_run.write('#SBATCH --mem=0G\n')
+              output_run.write('#SBATCH --ntasks-per-node=128\n')
+            elif ('cades' in options.machine):
               output_run.write('#SBATCH -A ccsi\n')
               output_run.write('#SBATCH -p batch\n')
               output_run.write('#SBATCH --mem=64G\n')
@@ -2014,7 +2023,7 @@ if ((options.ensemble_file != '' or int(options.mc_ensemble) != -1) and (options
             cnp= 'False'
         if ('oic' in options.machine or 'cades' in options.machine or 'ubuntu' in options.machine):
             mpicmd = 'mpirun'
-            if ('cades' in options.machine):
+            if ('cades' in options.machine and 'baseline' not in options.machine): # for this to work on cades-baseline, need further test
                 #mpicmd = '/software/dev_tools/swtree/cs400_centos7.2_pe2016-08/openmpi/1.10.3/centos7.2_gnu5.3.0/bin/mpirun'
                 output_run.write('source ~/anaconda3/bin/activate\n') #[Wei Huang: activate conda installed by user under home dir: ~/anaconda3, 06-30-2023]
                 output_run.write('conda activate phpenv\n') #[Wei Huang: use mpi under conda environment installed by user, 06-27-2023]
