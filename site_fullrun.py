@@ -308,10 +308,10 @@ if (options.machine == ''):
    print('')
    print('Machine not specified.  Using hostname '+hostname+' to determine machine')
    if ('or-condo' in hostname):
-       options.machine = 'cades'
+       options.machine = 'cades-baseline'
        npernode=32
    elif ('or-slurm' in hostname):
-       options.machine = 'cades'
+       options.machine = 'cades-baseline'
        npernode=32
    elif ('edison' in hostname):
        options.machine = 'edison'
@@ -344,7 +344,7 @@ if (options.ccsm_input != ''):
     ccsm_input = options.ccsm_input
 elif (options.machine == 'titan' or options.machine == 'eos'):
     ccsm_input = '/lustre/atlas/world-shared/cli900/cesm/inputdata'
-elif (options.machine == 'cades'):
+elif (options.machine == 'cades-baseline'):
     ccsm_input = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/'
 elif (options.machine == 'edison' or 'cori' in options.machine):
     ccsm_input = '/project/projectdirs/acme/inputdata'
@@ -358,7 +358,7 @@ elif ('compy' in options.machine):
 #        options.compiler = 'pgi'
 #    if (options.machine == 'eos' or options.machine == 'edison' or 'cori' in options.machine):
 #        options.compiler = 'intel'
-#    if (options.machine == 'cades'):
+#    if (options.machine == 'cades-baseline'):
 #        options.compiler = 'gnu'
     
 
@@ -388,8 +388,8 @@ if (options.runroot == '' or (os.path.exists(options.runroot) == False)):
         for s in myinput:
     	    myproject=s[:-1]
         runroot='/lustre/atlas/scratch/'+myuser+'/'+myproject
-    elif (options.machine == 'cades'):
-        runroot='/lustre/or-scratch/cades-ccsi/scratch/'+myuser
+    elif (options.machine == 'cades-baseline'):
+        runroot='/gpfs/wolf2/cades/cli185/scratch/'+myuser
     elif ('cori' in options.machine):
         runroot='/global/cscratch1/sd/'+myuser
         myinput = open(os.environ.get('HOME')+'/.cesm_proj','r')
@@ -1092,7 +1092,7 @@ for row in AFdatareader:
         for c in case_list:
             mysubmit_type = 'qsub'
             groupnum = int(sitenum/npernode)
-            if ('cades' in options.machine or 'anvil' in options.machine or 'chrysalis' in options.machine or \
+            if ('cades-baseline' in options.machine or 'anvil' in options.machine or 'chrysalis' in options.machine or \
                 'compy' in options.machine or 'cori' in options.machine or 'stampede2' in options.machine):
                 mysubmit_type = 'sbatch'
             if ('ubuntu' in options.machine):
@@ -1110,7 +1110,7 @@ for row in AFdatareader:
                 output = open('./scripts/'+myscriptsdir+'/'+c+'_group'+str(groupnum)+'.pbs','w')
                 for s in input:
                     if ("perl" in s or "python" in s):
-                        if ('cades' in options.machine or 'stampede2' in options.machine):
+                        if ('cades-baseline' in options.machine or 'stampede2' in options.machine):
                           output.write("#!/bin/bash -f\n")
                         else:
                           output.write("#!/bin/csh -f\n")
@@ -1142,13 +1142,13 @@ for row in AFdatareader:
                                 output.write('#SBATCH -p skx-normal\n')
                                 output.write('#SBATCH -N 1               # Total # of nodes\n')
                                 output.write('#SBATCH -A NOAA_CSDL_NWI_SCHISM  # Allocation name \n')
-                            if ('cades' in options.machine):
-                                output.write('#SBATCH -A ccsi\n')
+                            if ('cades-baseline' in options.machine):
+                                output.write('#SBATCH -A cli185\n')
                                 output.write('#SBATCH -p batch\n')
                                 output.write('#SBATCH --mem='+str(npernode*2)+'G\n')
                                 output.write('#SBATCH --ntasks-per-node '+str(npernode)+'\n')
                     elif ("#" in s and "ppn" in s):
-                        if ('cades' in options.machine):
+                        if ('cades-baseline' in options.machine):
                             #if ('diags' in c or 'iniadjust' in c):
                             #    output.write("#PBS -l nodes=1:ppn=1\n")
                             #else:
@@ -1192,10 +1192,10 @@ for row in AFdatareader:
                     output.write('module unload numpy\n')
                     output.write('module load python/2.7-anaconda\n')
                     output.write('module load nco\n')     
-                if ('cades' in options.machine):
+                if ('cades-baseline' in options.machine):
                     output.write('source $MODULESHOME/init/bash\n')
                     output.write('module unload python\n')
-                    output.write('module load python/2.7.12\n')
+                    output.write('module load python\n')
                 if ('stampede2' in options.machine):
                     output.write('source $MODULESHOME/init/bash\n')
                     output.write('module load nco\n')
@@ -1270,7 +1270,7 @@ for row in AFdatareader:
                      plotcmd = plotcmd + ' --ad_Pinit'
                  output.write(plotcmd+' --vars NEE --ylog\n')
                  output.write(plotcmd+' --vars TLAI,NPP,GPP,TOTVEGC,TOTSOMC\n') 
-                 if (options.machine == 'cades'):
+                 if (options.machine == 'cades-baseline'):
                      output.write("scp -r ./plots/"+mycaseid+" acme-webserver.ornl.gov:~/www/single_point/plots\n")
 
             if (sitenum == 0 and 'fn_spinup' in c):
@@ -1399,7 +1399,7 @@ if (options.no_submit == False and options.ensemble_file == ''):
         for thiscase in case_list:
             output = open('./scripts/'+myscriptsdir+'/'+thiscase+'_group'+str(g)+'.pbs','a')
             output.write('wait\n')
-            if ('trans_diags' in thiscase and options.machine == 'cades'):
+            if ('trans_diags' in thiscase and options.machine == 'cades-baseline'):
                 output.write("scp -r ./plots/"+mycaseid+" acme-webserver.ornl.gov:~/www/single_point/plots\n")
             output.close()
             if not options.no_submit:
