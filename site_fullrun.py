@@ -308,6 +308,9 @@ if (options.machine == ''):
    if ('or-slurm' in hostname):
        options.machine = 'cades'
        npernode=32
+   elif ('baseline' in hostname):
+       options.machine = 'cades-baseline'
+       npernode=32
    elif ('cori' in hostname):
        print('Cori machine not specified.  Setting to cori-haswell')
        options.machine = 'cori-haswell'
@@ -333,6 +336,8 @@ if (options.ccsm_input != ''):
     ccsm_input = options.ccsm_input
 elif (options.machine == 'cades'):
     ccsm_input = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/'
+elif (options.machine == 'cades-baseline'):
+    ccsm_input = '/gpfs/wolf2/cades/cli185/world-shared/e3sm/inputdata/'
 elif (options.machine == 'edison' or 'cori' in options.machine):
     ccsm_input = '/project/projectdirs/acme/inputdata'
 elif ('anvil' in options.machine or 'chrysalis' in options.machine):
@@ -376,6 +381,8 @@ if (options.runroot == '' or (os.path.exists(options.runroot) == False)):
         for s in myinput:
            myproject=s[:-1] 
         print('Project = '+myproject)
+    elif (options.machine == 'cades-baseline'):
+        runroot='/gpfs/wolf2/cades/cli185/scratch/'+myuser
     elif ('anvil' in options.machine or 'chrysalis' in options.machine):
         runroot="/lcrc/group/acme/"+myuser
         myproject='e3sm'
@@ -1073,7 +1080,7 @@ for row in AFdatareader:
             mysubmit_type = 'qsub'
             groupnum = int(sitenum/npernode)
             if ('cades' in options.machine or 'anvil' in options.machine or 'chrysalis' in options.machine or \
-                'compy' in options.machine or 'cori' in options.machine):
+                'compy' in options.machine or 'cades-baseline' in options.machine or 'cori' in options.machine):
                 mysubmit_type = 'sbatch'
             if ('ubuntu' in options.machine):
                 mysubmit_type = ''
@@ -1097,7 +1104,7 @@ for row in AFdatareader:
                 output = open('./scripts/'+myscriptsdir+'/'+c+'_group'+str(groupnum)+'.pbs','w')
                 for s in input:
                     if ("perl" in s or "python" in s):
-                        if ('cades' in options.machine or 'docker' in options.machine):
+                        if ('compy' in options.machine or 'docker' in options.machine):
                           output.write("#!/bin/bash -f\n")
                         else:
                           output.write("#!/bin/csh -f\n")
@@ -1373,12 +1380,13 @@ for row in AFdatareader:
 
 # Submit PBS scripts for single/multi-site simulations on 1 node
 if (options.no_submit == False and options.ensemble_file == ''):
+    groupnum = int(sitenum/npernode)
     for g in range(0,int(groupnum)+1):
         job_depend_run=''
         for thiscase in case_list:
             output = open('./scripts/'+myscriptsdir+'/'+thiscase+'_group'+str(g)+'.pbs','a')
             output.write('wait\n')
-            if ('trans_diags' in thiscase and options.machine == 'cades'):
+            if ('trans_diags' in thiscase and options.machine == 'cades-baseline'):
                 output.write("scp -r ./plots/"+mycaseid+" acme-webserver.ornl.gov:~/www/single_point/plots\n")
             output.close()
             if not options.no_submit:

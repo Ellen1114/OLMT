@@ -1086,7 +1086,7 @@ if (options.maxpatch_pft != 17):
   os.system("./xmlchange "+mylsm+"_BLDNML_OPTS = '" + xval + "'")
 
 # for spinup and transient runs, PIO_TYPENAME is pnetcdf, which now not works well
-if('mac' in options.machine or 'cades' in options.machine): 
+if('mac' in options.machine or 'cades' in options.machine or 'cades-baseline' in options.machine): 
     os.system("./xmlchange PIO_TYPENAME=netcdf ")
 
 
@@ -1878,7 +1878,7 @@ if ((options.ensemble_file != '' or int(options.mc_ensemble) != -1) and (options
     #Launch ensemble if requested 
     mysubmit_type = 'qsub'
     if ('cades' in options.machine or 'compy' in options.machine or 'ubuntu' in options.machine or 'cori' in options.machine or \
-        options.machine == 'anvil' or options.machine == 'chrysalis'):
+        options.machine == 'anvil' or options.machine == 'cades-baseline' or options.machine == 'chrysalis'):
         mysubmit_type = 'sbatch'
     if (options.ensemble_file != ''):
         os.system('mkdir -p '+PTCLMdir+'/scripts/'+myscriptsdir)
@@ -1930,7 +1930,7 @@ if ((options.ensemble_file != '' or int(options.mc_ensemble) != -1) and (options
               output_run.write('#SBATCH -A condo\n')
               output_run.write('#SBATCH -p acme-small\n')
         output_run.write("\n")
-        if ('cades' in options.machine or 'compy' in options.machine or 'anvil' in options.machine or 'chrysalis' in options.machine):
+        if ('cades' in options.machine or 'cades-baseline' in options.machine or 'compy' in options.machine or 'anvil' in options.machine or 'chrysalis' in options.machine):
             #get the software environment
             softenvfile = open(casedir+'/software_environment.txt','r')
             for line in softenvfile:
@@ -1941,9 +1941,9 @@ if ((options.ensemble_file != '' or int(options.mc_ensemble) != -1) and (options
         cnp = 'True'
         if (options.cn_only or options.c_only):
             cnp= 'False'
-        if ('docker' in options.machine or 'oic' in options.machine or 'cades' in options.machine or 'ubuntu' in options.machine):
+        if ('docker' in options.machine or 'oic' in options.machine or 'cades-baseline' in options.machine or 'ubuntu' in options.machine):
             mpicmd = 'mpirun'
-            if ('cades' in options.machine):
+            if ('cades-baseline' in options.machine):
                #mpicmd = '/software/dev_tools/swtree/cs400_centos7.2_pe2016-08/openmpi/1.10.3/centos7.2_gnu5.3.0/bin/mpirun'
                mpicmd = 'srun'
                cmd = mpicmd+' -n '+str(np_total)+' python manage_ensemble.py ' \
