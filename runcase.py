@@ -1659,6 +1659,10 @@ if (options.marsh):
 if (options.col3rd):
     print("Turning on COL3RD modification\n")
     os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DCOL3RD'")
+#Added option for COL4RD, 4rd column [Jorge A Penaloza-Giraldo 2024]
+if (options.col4rd):
+    print("Turning on COL4RD modification\n")
+    os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DCOL4RD'")
 if (options.alquimia != ""):
     print("Turning on alquimia interface for compilation and running")
     os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DUSE_ALQUIMIA_LIB'")
