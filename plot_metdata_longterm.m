@@ -28,9 +28,9 @@ for i=year:year+34
    %end
 end
 fclose(f2)
-%FileName = '/nfs/data/ccsi/proj-shared/E3SM/pt-e3sm-inputdata/atm/datm7/GSWP3_daymet/cpl_bypass_us-gc03/GSWP3_daymet4_PRECTmms_1980-2014_z01.nc';
+%FileName = '/gpfs/wolf2/cades/cli185/proj-shared/pt-e3sm-inputdata/atm/datm7/GSWP3_daymet/cpl_bypass_us-gc03/GSWP3_daymet4_PRECTmms_1980-2014_z01.nc';
 %RAIN_in=ncread(FileName,'PRECTmms');
-%FileName = '/nfs/data/ccsi/proj-shared/E3SM/pt-e3sm-inputdata/atm/datm7/GSWP3_daymet/cpl_bypass_us-gc03/GSWP3_daymet4_TBOT_1980-2014_z01.nc';
+%FileName = '/gpfs/wolf2/cades/cli185/proj-shared/pt-e3sm-inputdata/atm/datm7/GSWP3_daymet/cpl_bypass_us-gc03/GSWP3_daymet4_TBOT_1980-2014_z01.nc';
 %TBOT_in=ncread(FileName,'TBOT');
 %f2=fopen(strcat('../runcase/results/','GSWP3_daymet4_1980_2014','.txt'),'wt')
 %for i=1:length(TBOT_in)
@@ -39,10 +39,10 @@ fclose(f2)
 %    fprintf(f2,'%d %10f %10f\n',[i*0.125+datenum(1980,1,1) RAIN_in(i) TBOT_in(i)]);
 %end
 %fclose(f2) 
-%FileName = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/atm_forcing.datm7.GSWP3-w5e5.c/cpl_bypass_full/gswp_w5e5_PRECTmms_1901-2019_z19.nc';
+%FileName = '/gpfs/wolf2/cades/cli185/proj-shared/pt-e3sm-inputdata/atm/datm7/atm_forcing.datm7.GSWP3-w5e5.c/cpl_bypass_full/gswp_w5e5_PRECTmms_1901-2019_z19.nc';
 %RAIN_in=ncread(FileName,'PRECTmms');
 %RAIN_in=RAIN_in(:,9618);
-%FileName = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/atm_forcing.datm7.GSWP3-w5e5.c/cpl_bypass_full/gswp_w5e5_TBOT_1901-2019_z19.nc';
+%FileName = '/gpfs/wolf2/cades/cli185/proj-shared/pt-e3sm-inputdata/atm/datm7/atm_forcing.datm7.GSWP3-w5e5.c/cpl_bypass_full/gswp_w5e5_TBOT_1901-2019_z19.nc';
 %TBOT_in=ncread(FileName,'TBOT');
 %TBOT_in=TBOT_in(:,9618);
 %f2=fopen(strcat('../runcase/results/','GSWP3_w5e5_1901_2019','.txt'),'wt')
@@ -52,10 +52,10 @@ fclose(f2)
 %    fprintf(f2,'%d %10f %10f\n',[i*0.25+datenum(1901,1,1) RAIN_in(i) TBOT_in(i)]);
 %end
 %fclose(f2)
-%FileName = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/atm_forcing.datm7.GSWP3.0.5d.v2.c180716/cpl_bypass_full/GSWP3_PRECTmms_1901-2014_z19.nc';
+%FileName = '/gpfs/wolf2/cades/cli185/proj-shared/pt-e3sm-inputdata/atm/datm7/atm_forcing.datm7.GSWP3.0.5d.v2.c180716/cpl_bypass_full/GSWP3_PRECTmms_1901-2014_z14.nc';
 %RAIN_in=ncread(FileName,'PRECTmms');
 %RAIN_in=RAIN_in(:,9618);
-%FileName = '/nfs/data/ccsi/proj-shared/E3SM/inputdata/atm/datm7/atm_forcing.datm7.GSWP3.0.5d.v2.c180716/cpl_bypass_full/GSWP3_TBOT_1901-2014_z19.nc';
+%FileName = '/gpfs/wolf2/cades/cli185/proj-shared/pt-e3sm-inputdata/atm/datm7/atm_forcing.datm7.GSWP3.0.5d.v2.c180716/cpl_bypass_full/GSWP3_TBOT_1901-2014_z14.nc';
 %TBOT_in=ncread(FileName,'TBOT');
 %TBOT_in=TBOT_in(:,9618);
 %f2=fopen(strcat('../runcase/results/','GSWP3_1901_2014','.txt'),'wt')

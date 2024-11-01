@@ -95,6 +95,11 @@ parser.add_option("--marsh", dest="marsh", default=False, \
 #adding option for a 3rd column (gridcell) [Wei Huang 2022-07-06]
 parser.add_option("--col3rd", dest="col3rd", default=False, \
                   help = 'Adding 3rd column/gridcell', action="store_true")
+
+#adding option for a 4th column (gridcell) [Jorge A. Penaloza-Giraldo 2024]
+parser.add_option("--col4th", dest="col4th", default=False, \
+                  help = 'Adding 3rd column/gridcell', action="store_true")       
+
 parser.add_option("--tide_components_file", dest="tide_components_file", default='', \
                     help = 'NOAA tide components file')
 parser.add_option("--tide_forcing_file", dest="tide_forcing_file", default='', \
@@ -1659,10 +1664,10 @@ if (options.marsh):
 if (options.col3rd):
     print("Turning on COL3RD modification\n")
     os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DCOL3RD'")
-#Added option for COL4RD, 4rd column [Jorge A Penaloza-Giraldo 2024]
-if (options.col4rd):
-    print("Turning on COL4RD modification\n")
-    os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DCOL4RD'")
+#Added option for COL4TH, 4rd column [Jorge A Penaloza-Giraldo 2024]
+if (options.col4th):
+    print("Turning on COL4TH modification\n")
+    os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DCOL4TH'")
 if (options.alquimia != ""):
     print("Turning on alquimia interface for compilation and running")
     os.system("./xmlchange --id "+mylsm+"_CONFIG_OPTS --append --val '-cppdefs -DUSE_ALQUIMIA_LIB'")
